@@ -48,6 +48,35 @@ function getGenericMarkerInfo(term ,label, dataset, scaffold, simulations) {
   return data;
 }
 
+//Add this to perform a search upon clicking on the marker
+function getCatData(term, label, dataset, scaffold, simulations) {
+  if (term || label) {
+    let data = {};
+    switch (term) {
+      case "UBERON:0002240":
+        data.title = "Spinal Cord";
+        data.description = "";
+        data.actions = {
+          search: {
+            title: "Explore data",
+            label: "Spinal Cord",
+            resource: "https://sparc.science/data?type=dataset&q=spinal%20cord",
+            type: "Search",
+            filter: {
+              facet: 'genotype',
+              term: 'spinal code'
+            },
+          },
+        };
+        break;
+      default:
+        data = getGenericMarkerInfo(term, label, dataset, scaffold, simulations);
+        break;
+    }
+    return data;
+  }
+  return undefined;
+}
 
 function getHumanData(term, label, dataset, scaffold, simulations) {
   if (term || label) {
@@ -420,6 +449,8 @@ function simulatedData(term, taxonomy, label, dataset, scaffold, simulations) {
   switch (taxonomy) {
     case "NCBITaxon:9606":
         return getHumanData(term, label, dataset, scaffold, simulations);
+    case "NCBITaxon:9685":
+      return getCatData(term, label, dataset, scaffold, simulations);
     case "NCBITaxon:9823":
         return getPigData(term, label, dataset, scaffold, simulations);
     case "NCBITaxon:10090":
@@ -442,12 +473,23 @@ function getRatTerms() {
   ];
 }
 
+// List of markers to add
+function getCatTerms() {
+  return [
+    //spinal cord
+    {id: "UBERON:0002240", type:"simulation"},
+  ];
+}
+
 export function getAvailableTermsForSpecies(taxonomy) {
   switch (taxonomy) {
     case "NCBITaxon:9606":
       return {};
-      case "NCBITaxon:9823":
-        return {};
+    //Add the marker
+    case "NCBITaxon:9685":
+      return getCatTerms();
+    case "NCBITaxon:9823":
+      return {};
     case "NCBITaxon:10090":
       return {};
     case "NCBITaxon:10114":

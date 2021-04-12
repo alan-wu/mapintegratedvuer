@@ -121,6 +121,14 @@ export default {
       return [doi.split('/')[doi.split('/').length-2], doi.split('/')[doi.split('/').length-1]]
     },
     getBanner: function () {
+      //manually add the card
+      if (this.entry.simcore) {
+        this.thumbnail = "https://assets.discover.blackfynn.com/dataset-assets/122/1/banner.jpg"
+        this.discoverId = 122
+        this.version = 1
+        this.dataLocation = this.entry.url.uri
+        return
+      }
       let doi = this.splitDOI(this.entry.doi)
       fetch(`https://api.blackfynn.io/discover/datasets/doi/${doi[0]}/${doi[1]}`)
         .then((response) =>{

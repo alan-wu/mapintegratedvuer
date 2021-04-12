@@ -247,10 +247,35 @@ export default {
       return params
     },
     resultsProcessing: function (data) {
-      this.lastSearch = this.searchInput
       this.results = [];
       let id = 0;
       this.numberOfHits = data.numberOfHits;
+      // Manually add an entry for the spinal cord dataset referenced by SciCrunch.
+      if (this.searchInput === "Spinal Cord") {
+        this.results.push({
+          description: "MRI image dataset of the cat spinal cord, contributed by the University of Pittsburgh.",
+          contributors: [{name: "Zhuang, Katie"}, {name: ""}],
+          numberSamples: 0,
+          sexes: undefined,
+          organs: ["heart"],
+          ages: undefined,
+          updated: undefined,
+          // This corresponding to the view dataset buttoon
+          url: {uri: "https://sparc.science/datasets/122?type=dataset"},
+          datasetId: undefined,
+          csvFiles: undefined,
+          id: id++,
+          doi: "https://doi.org/10.26275/6paz-gj9j",
+          scaffold: false,
+          scaffolds: false,
+          simulation: false,
+          simcore: true
+        });
+        this.numberOfHits++;
+        // Add the entries retrieved from SciCrunch.
+        this.lastSearch = this.searchInput
+      }
+
       if (data.results.length === 0){
         return
       }
@@ -278,12 +303,11 @@ export default {
           url: element.uri[0],
           datasetId: element.identifier,
           csvFiles: element.csvFiles,
-          id: id,
+          id: id++,
           doi: element.doi,
           scaffold: element.scaffolds ? true : false,
           scaffolds: element.scaffolds ? element.scaffolds : false
         });
-        id++;
       });
     },
     createfilterParams: function(params){
