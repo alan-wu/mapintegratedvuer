@@ -16,8 +16,8 @@
         @scaffold-selected="resourceSelected(entry.type, $event)" ref="scaffold"
         :backgroundToggle=true :traditional=true :helpMode="helpMode"
         :render="entry.mode !== 'minimised'" :displayMinimap=false :displayMarkers=false />
-      <PlotVuer v-else-if="entry.type === 'Plot'" :url="entry.resource"
-      :plotType="entry.plotType" :helpMode="helpMode" style="overflow: hidden"></PlotVuer>
+      <PlotVuer v-else-if="entry.type === 'Plot'" :url="entry.resource" ref="plot"
+        :plotType="entry.plotType" :helpMode="helpMode" style="overflow: hidden"></PlotVuer>
       <IframeVuer v-else-if="entry.type === 'Iframe'" :url="entry.resource" />
     </div>
   </div>
@@ -111,6 +111,11 @@ export default {
       window.removeEventListener("mousedown", this.endHelp)
       this.helpMode = false;
       setTimeout(()=>{this.isInHelp = undefined}, 200);
+    },
+    highlightAnnotation: function(value) {
+      if (this.entry.type == "MultiFlatmap" ) {
+        this.$refs['multiflatmap'].getCurrentFlatmap().searchAndShowResult(value);
+      }
     }
   },
   data: function() {

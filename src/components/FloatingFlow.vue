@@ -17,7 +17,8 @@
           @resource-selected="resourceSelected"
           @flatmapChanged="flatmapChanged"/>
           <SideBar ref="sideBar" class="side-bar" :apiLocation="apiLocation" 
-            :visible="sideBarVisibility" @actionClick="actionClick"></SideBar>
+            :visible="sideBarVisibility" @actionClick="actionClick"
+            @search-changed="searchChanged($event)"></SideBar>
       </div>
     </el-main>
   </el-container>
@@ -88,6 +89,11 @@ export default {
     },
   },
   methods: {
+    searchChanged: function(data) {
+      if (data && data.id == 1 && data.type == "query-update") {
+        this.$refs.dialogs[0].$refs['content'].highlightAnnotation(data.value);
+      }
+    },
     /**
      * Callback when an action is performed (open new dialogs).
      */
