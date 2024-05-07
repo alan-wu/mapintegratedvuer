@@ -48,7 +48,7 @@ export default {
       return this.$refs.flatmap.mapImp;
     },
     flatmaprResourceSelected: function (type, resource) {
-      this.$refs.flatmap.resourceSelected(
+      this.resourceSelected(
         type, resource, (this.$refs.map.viewingMode === "Exploration"));
     },
     flatmapReadyCall: function (flatmap) {
