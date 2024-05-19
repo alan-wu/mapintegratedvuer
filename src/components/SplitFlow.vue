@@ -28,6 +28,7 @@
           @actionClick="actionClick"
           @tabClicked="tabClicked"
           @search-changed="searchChanged($event)"
+          @hover-changed="hoverChanged($event)"
           @contextUpdate="contextUpdate($event)"
           @datalink-clicked="datalinkClicked($event)"
         />
@@ -94,6 +95,7 @@ export default {
       activeDockedId : 1,
       filterTriggered: false,
       availableFacets: [],
+      hoveredMarkerDelay: undefined,
     }
   },
   watch: {
@@ -252,6 +254,18 @@ export default {
         suggestions.push({"value": "\"" + item +"\""});
       }
       payload.data.cb(suggestions);
+    },
+    hoverChanged: function (data) {
+      const hoverEntries = data && data.anatomy ? data.anatomy : []
+      this.settingsStore.updateHoveredMarkers(hoverEntries);
+      if (!hoverEntries.length) {
+        this.hoveredMarkerDelay = setTimeout(() => {
+          EventBus.emit("markerUpdate");
+        }, 3000)
+      } else {
+        clearTimeout(this.hoveredMarkerDelay)
+        EventBus.emit("markerUpdate");
+      }
     },
     searchChanged: function (data) {
       if (data && data.type == "query-update") {
