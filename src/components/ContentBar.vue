@@ -189,12 +189,17 @@ export default {
       EventBus.emit("RemoveEntryRequest", this.entry.id);
     },
     getEntryTitle: function(entry) {
+      console.log(entry)
       if (entry) {
         let title = entry.label ? entry.label + " ": '';
         let type = entry.type;
         if (type == "Scaffold")
           type = "3D Scaffold";
         title += type;
+        if (type == "Flatmap") {
+          title += " - " + entry.resource;
+        }
+        
         if (entry.datasetId)
           title += " - " + entry.datasetId + "";
         else if (entry.discoverId)

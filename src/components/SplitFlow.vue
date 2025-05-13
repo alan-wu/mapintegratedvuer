@@ -155,8 +155,14 @@ export default {
     actionClick: function (action) {
       if (action) {
         if (action.type == "Search") {
-          if (action.nervePath) {
-            this.openSearch([action.filter], action.label);
+          if (action.filter) {
+            this.openSearch([action.filter], action.term);
+            Tagging.sendEvent({
+              'event': 'interaction_event',
+              'event_name': 'portal_maps_action_filter',
+              'category': action.term || 'filter',
+              'location': 'map_location_pin'
+            });
           } else {
             this.openSearch([], action.term);
             // GA Tagging
@@ -171,6 +177,25 @@ export default {
               'location': 'map_location_pin'
             });
             this.filterTriggered = true;
+          }
+        } else if (action.type == "PMRSearch") {
+          if (action.term) {
+            let term = action.term;
+            if (term === "cvs:functional.cell") {
+              term = "cellular";
+            } else if (term === "cvs:functional.tissue") {
+              term = "tissue scale";
+            } else if (term === "cvs:functional.whole-body") {
+              term = "whole-body scale";
+            }
+            term = `"${term}"`;
+            this.openPMRSearch([], term);
+            Tagging.sendEvent({
+              'event': 'interaction_event',
+              'event_name': 'portal_maps_action_filter',
+              'category': action.term || 'filter',
+              'location': 'map_location_pin'
+            });
           }
         } else if (action.type == "URL") {
           window.open(action.resource, "_blank");
@@ -216,6 +241,13 @@ export default {
             'category': filterValues || 'filter',
             'location': 'map_popup_button'
           });
+        } else if (action.type == "OpenCOR") {
+          if (action.resource) {
+            const link = `https://opencor.ws/appdev/?openFile/${action.resource}`;
+            if (window) {
+              window.open(link,'_blank');
+            }
+          }
         } else {
           this.trackGalleryClick(action);
           this.createNewEntry(action);
@@ -453,7 +485,14 @@ export default {
       this._facets = facets;
       if (this.$refs && this.$refs.sideBar) {
         this.$refs.sideBar.openSearch(facets, query);
-        this.$refs.sideBar.tabClicked({id:  1, type: 'datasetExplorer'});
+        //this.$refs.sideBar.tabClicked({id:  1, type: 'datasetExplorer'});
+      }
+      this.startUp = false;
+    },
+    openPMRSearch: function (facets, query) {
+      if (this.$refs && this.$refs.sideBar) {
+        this.$refs.sideBar.openPMRSearch(facets, query);
+        //this.$refs.sideBar.tabClicked({id:  1, type: 'datasetExplorer'});
       }
       this.startUp = false;
     },

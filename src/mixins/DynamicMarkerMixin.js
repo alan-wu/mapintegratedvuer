@@ -42,6 +42,7 @@ export default {
         // Set the dataset markers
         let markers = this.settingsStore.globalSettings.displayMarkers ? this.settingsStore.markers : [];
         markers = removeDuplicates(markers);
+        let multiMarkers = this.settingsStore.globalSettings.displayMarkers ? this.settingsStore.multiScaleMarkers : [];
         let fmMarkers = this.removeMarkersNotOnFlatmap(flatmapImp, markers);
         flatmapImp.clearMarkers();
         flatmapImp.clearDatasetMarkers();
@@ -54,6 +55,7 @@ export default {
         } else {
           flatmapImp.addDatasetMarkers(fmMarkers);
         }
+        flatmapImp.addMarkers(multiMarkers,{ kind: 'multiscale' } );
 
         // Set the featured markers
         if (this.entry.type === "MultiFlatmap") {

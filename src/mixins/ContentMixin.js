@@ -111,11 +111,10 @@ export default {
     resourceSelected: function (type, resources) {
       const resource = resources[0]
       // Skip processing if resources already has actions
-      if (this.resourceHasAction(resource)) {
+      if (resource && this.resourceHasAction(resource)) {
         EventBus.emit("PopoverActionClick", resource);
         return;
       }
-
       let returnedAction = undefined;
       let action = "none";
       let fireResourceSelected = false;
@@ -126,13 +125,14 @@ export default {
         internalName: undefined,
         eventType: undefined,
       };
-
       if (type == "MultiFlatmap" || type == "Flatmap") {
+        const flatmapImp = this.getFlatmapImp();
         result.internalName = resource?.feature?.label ?
           resource.feature.label : this.idNamePair[resource.feature.models];
         if (resource.eventType == "click") {
           result.eventType = "selected";
           if (resource.feature.type == "marker") {
+
             let label = result.internalName;
             if (this.settingsStore.isFeaturedMarkerIdentifier(resource.feature.id)) {
               // It is a featured dataset search for DOI.
@@ -151,24 +151,39 @@ export default {
                 term: "Anatomical structure",
               };
               let labels = new Set();
-              resource.feature['marker-terms'].forEach((term) => {
-                labels.add(term.label)
-              });
-              labels.add(label)
-              if (labels.size > 0) {
+              if (resource?.feature['marker-terms']) {
+                if(resource.feature['marker-terms'].length > 0) {
+                  resource.feature['marker-terms'].forEach((term) => {
+                    labels.add(term.label)
+                  });
+                  labels.add(label)
+                  if (labels.size > 0) {
+                    returnedAction = {
+                      type: "Facets",
+                      labels: [...labels],
+                    };
+                  }
+                } else if (resource?.feature?.models) {
+                  returnedAction = {
+                    type: "PMRSearch",
+                    term: resource.feature.models,
+                  };
+                }
+              }
+            }
+            fireResourceSelected = true;
+            if (type == "MultiFlatmap") {
+              flatmapImp.clearSearchResults();
+            }
+          } else if (resource.feature.type == "feature") {
+            if (flatmapImp.options && flatmapImp.options.style === 'functional') {
+              if (resource.feature?.hyperlinks?.pmr) {
                 returnedAction = {
-                  type: "Facets",
-                  labels: [...labels],
+                  type: "URL",
+                  resource: resource.feature?.hyperlinks?.pmr,
                 };
               }
             }
-
-            fireResourceSelected = true;
-            if (type == "MultiFlatmap") {
-              const flatmap = this.$refs.multiflatmap.getCurrentFlatmap().mapImp;
-              flatmap.clearSearchResults();
-            }
-          } else if (resource.feature.type == "feature") {
             // Do no open scaffold in sync map
             if (this.syncMode) {
               fireResourceSelected = true;
@@ -499,9 +514,9 @@ export default {
 
         let flatmap = null;
         let scaffold = null;
-        if (this.flatmapRef) flatmap = this.$refs.flatmap;
-        if (this.multiflatmapRef) flatmap = this.$refs.multiflatmap.getCurrentFlatmap();
-        if (this.scaffoldRef) scaffold = this.$refs.scaffold;
+        if (this.flatmapRef) flatmap = this.$flatmapRef;
+        if (this.multiflatmapRef) flatmap = this.$multiflatmapRef;
+        if (this.scaffoldRef) scaffold = this.$scaffoldRef;
 
         // reset
         clearTimeout(this.highlightDelay);

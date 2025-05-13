@@ -11,6 +11,7 @@ export const useSettingsStore = defineStore('settings', {
       algoliaKey: undefined,
       algoliaId: undefined,
       pennsieveApi: undefined,
+      pmrHost: "https://models.physiomeproject.org/",
       flatmapAPI: undefined,
       nlLinkPrefix: undefined,
       mapManager: undefined,
@@ -18,6 +19,7 @@ export const useSettingsStore = defineStore('settings', {
       facets: { species: [], gender: [], organ: [] },
       numberOfDatasetsForFacets: [],
       markers: [],
+      multiScaleMarkers: ["cvs:functional.whole-body", "cvs:functional.tissue", "cvs:functional.cell"],
       hoverAnatomies: [],
       hoverOrgans: [],
       hoverDOI: '',
@@ -90,6 +92,9 @@ export const useSettingsStore = defineStore('settings', {
     },
     updateRootUrl(rootUrl) {
       this.rootUrl = rootUrl;
+    },
+    updatePmrHost(pmrHost) {
+      this.pmrHost = pmrHost ? pmrHost : "https://models.physiomeproject.org/";
     },
     updateMarkers(markers) {
       this.markers = markers;

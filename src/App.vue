@@ -168,6 +168,7 @@ export default {
         flatmapAPI: import.meta.env.VITE_FLATMAPAPI_LOCATION,
         nlLinkPrefix: import.meta.env.VITE_NL_LINK_PREFIX,
         rootUrl: import.meta.env.VITE_ROOT_URL,
+        pmrHost: import.meta.env.VITE_PMR_HOST,
       }
     }
   },
@@ -271,7 +272,8 @@ export default {
       this.$refs.map.openSearch([], "10.26275/1uno-tynt");
     },
     mapIsLoaded: function(map) {
-      console.log("map is loaded", map)
+      //if (!this.uuid) this.setFlatmap();
+      console.log("map is loaded")
       // map.changeViewingMode('Annotation')
     },
     viewerIsReady: function() {
