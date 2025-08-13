@@ -6,7 +6,7 @@
   />
   <SimulationVuer
     v-else
-    :id="this.entry.discoverId"
+    :id="entry.discoverId"
     ref="simulation"
   />
 </template>
@@ -16,8 +16,8 @@
 import ContentMixin from "../../mixins/ContentMixin";
 import { SimulationVuer } from "@abi-software/simulationvuer";
 import "@abi-software/simulationvuer/dist/style.css";
-import OpenCOR from '@opencor/opencor'
-import '@opencor/opencor/style.css'
+import OpenCOR from "@opencor/opencor";
+import "@opencor/opencor/style.css";
 
 export default {
   name: "Simulation",
