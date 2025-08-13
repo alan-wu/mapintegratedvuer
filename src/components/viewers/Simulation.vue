@@ -1,7 +1,12 @@
 <template>
+  <OpenCOR
+    v-if="entry.resource"
+    :omex="entry.resource"
+    ref="simulation"
+  />
   <SimulationVuer
-    :apiLocation="apiLocation"
-    :id="id"
+    v-else
+    :id="this.entry.discoverId"
     ref="simulation"
   />
 </template>
@@ -11,19 +16,15 @@
 import ContentMixin from "../../mixins/ContentMixin";
 import { SimulationVuer } from "@abi-software/simulationvuer";
 import "@abi-software/simulationvuer/dist/style.css";
+import OpenCOR from '@opencor/opencor'
+import '@opencor/opencor/style.css'
 
 export default {
   name: "Simulation",
   mixins: [ ContentMixin ],
   components: {
+    OpenCOR,
     SimulationVuer,
   },
-  computed: {
-    id: function() {
-      //resource field is only available for simulation omex file and it will run locally.
-      //discoverId field is used for simulations running on O2SPARC.
-      return this.entry.resource ? this.entry.resource: this.entry.discoverId;
-    }
-  }
 };
 </script>
