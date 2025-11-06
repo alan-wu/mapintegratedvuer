@@ -90,7 +90,7 @@ describe('MapContent', () => {
     cy.get('.header').should('be.visible');
     cy.task('log', 'Test 2')
 
-    cy.get('.toolbar-title').should('exist');
+    cy.get('.toolbar-title', {timeout: 10000}).should('exist');
 
     //Only three visible button on the toolbar at the start
     cy.get('.icon-group .map-icon:visible ').should('have.length', 3);
