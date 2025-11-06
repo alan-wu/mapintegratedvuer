@@ -116,6 +116,7 @@ describe('MapContent', () => {
     if (is_high_resolution_screen()) {
       snapshot = 'minimap_hr'
     }
+    cy.task('log', 'Test 3')
     cy.get('html').invoke('css', 'width', '1200px');
     cy.wait(5000);
     cy.get('[style="height: 100%;"] > [style="height: 100%; width: 100%; position: relative;"] > [style="height: 100%; width: 100%;"] > :nth-child(2) > :nth-child(2) > #maplibre-minimap > .maplibregl-canvas-container > .maplibregl-canvas').compareSnapshot(snapshot).then(comparisonResults => {
@@ -132,6 +133,7 @@ describe('MapContent', () => {
       cy.checkGlobalSettings('MapContent_1pane', setting, index);
     })
 
+    cy.task('log', 'Test 4')
     cy.checkFlatmapProvenanceCard('Mouse')
     cy.get('@Mouse_publicationLink').then((mousePublicationLink) => {
       cy.checkFlatmapProvenanceCard('Rat', mousePublicationLink);
@@ -161,6 +163,7 @@ describe('MapContent', () => {
     cy.get('.maplibregl-popup-content').should('exist').contains('Pelvic splanchnic nerve');
     cy.get('.search-box.el-autocomplete > .el-input > .el-input__wrapper > .el-input__inner').should('exist').clear();
 
+    cy.task('log', 'Test 5')
     //Test searching with uberon id wich should display a pop up with anatomical name
     cy.get('[style="height: 100%;"] > [style="height: 100%; width: 100%; position: relative;"] > .settings-group > :nth-child(1)').should('exist').click();
 
@@ -189,7 +192,7 @@ describe('MapContent', () => {
     cy.get(':nth-child(1) > .connectivity-info', {timeout: 45000}).should('contain', 'Neuron type aacar');
     cy.get('[style=""] > .el-card__header > .header > .is-link').click();
 
-
+    cy.task('log', 'Test 6')
 
     cy.get('.viewing-mode-selector .el-dropdown').as('viewingModes').trigger('mouseenter'); // open
     cy.get('@viewingModes').contains("Exploration").click();
@@ -211,6 +214,8 @@ describe('MapContent', () => {
 
     //Check how many tags in the dataset
     cy.get('.box-card .container button').should('have.length', 6);
+
+    cy.task('log', 'Test 7')
 
     //Intercept the request and stub it with preloaded fixture
     cy.get('@metadata').then((metadata) => {
