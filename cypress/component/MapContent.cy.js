@@ -108,7 +108,7 @@ describe('MapContent', () => {
 
     cy.get('.multi-container > .el-loading-parent--relative > [name="el-loading-fade"] > .el-loading-mask', {timeout: 60000}).should('not.exist');
     cy.task('log', 'Test 2.6')
-    cy.get('.maplibregl-ctrl-minimap > .maplibregl-canvas-container > .maplibregl-canvas', {timeout: 60000}).should('exist').should('be.visible');
+    cy.get('#maplibre-minimap > .maplibregl-canvas-container > .maplibregl-canvas', {timeout: 60000}).should('exist').should('be.visible');
     cy.task('log', 'Test 2.7')
     //the following attempt to workaround it.
     function is_high_resolution_screen() {
