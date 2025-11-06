@@ -104,9 +104,12 @@ describe('MapContent', () => {
     //Wait for curie response
     cy.wait('@anatomyResponse', {timeout: 20000});
 
-    cy.get('.multi-container > .el-loading-parent--relative > [name="el-loading-fade"] > .el-loading-mask', {timeout: 60000}).should('not.exist');
-    cy.get('#maplibre-minimap > .maplibregl-canvas-container > .maplibregl-canvas', {timeout: 60000}).should('be.visible');
+    cy.task('log', 'Test 2.5')
 
+    cy.get('.multi-container > .el-loading-parent--relative > [name="el-loading-fade"] > .el-loading-mask', {timeout: 60000}).should('not.exist');
+    cy.task('log', 'Test 2.6')
+    cy.get('#maplibre-minimap > .maplibregl-canvas-container > .maplibregl-canvas', {timeout: 60000}).should('be.visible');
+    cy.task('log', 'Test 2.7')
     //the following attempt to workaround it.
     function is_high_resolution_screen() {
       // retina display has a devicePixelRatio of 2
