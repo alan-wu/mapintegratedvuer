@@ -92,8 +92,14 @@ describe('MapContent', () => {
 
     cy.get('.toolbar-title', {timeout: 20000}).should('be.visible');
 
+
+    cy.task('log', 'Test 2.3')
+
     //Only three visible button on the toolbar at the start
     cy.get('.icon-group .map-icon:visible ').should('have.length', 3);
+
+
+    cy.task('log', 'Test 2.4')
 
     //Sidebar should not be visbile
     cy.get('.el-drawer.rtl.my-drawer').should('not.be.visible');
