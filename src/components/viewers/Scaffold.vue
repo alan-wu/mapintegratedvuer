@@ -336,6 +336,7 @@ export default {
       }
     },
     markerLabels: function () {
+      console.log("here")
       return this.settingsStore.globalSettings.displayMarkers ? this.settingsStore.numberOfDatasetsForFacets : {};
     },
   },

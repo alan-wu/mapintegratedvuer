@@ -405,6 +405,7 @@ export default {
   beforeMount: function() {
     if (this.options) {
       // Split options prop up to commit to the store
+      this.options.acupointsApi ? this.settingsStore.updateAcupointsAPI(this.options.acupointsApi) : null;
       this.options.sparcApi ? this.settingsStore.updateSparcAPI(this.options.sparcApi) : null;
       this.options.algoliaIndex ? this.settingsStore.updateAlgoliaIndex(this.options.algoliaIndex) : null;
       this.options.algoliaKey ? this.settingsStore.updateAlgoliaKey(this.options.algoliaKey) : null;

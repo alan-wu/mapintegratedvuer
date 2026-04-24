@@ -20,6 +20,7 @@
       >
         <SideBar
           ref="sideBar"
+          :acupointsInfoList="acupoints"
           :envVars="envVars"
           :visible="sideBarVisibility"
           :class="['side-bar', { 'start-up': startUp }]"
@@ -29,6 +30,7 @@
           :connectivityEntry="connectivityEntry"
           :connectivityKnowledge="connectivityKnowledge"
           :filterOptions="filterOptions"
+          :tabs="tabArray"
           :showVisibilityFilter="showVisibilityFilter"
           :showLongLabel="showLongLabel"
           @tabClicked="onSidebarTabClicked"
@@ -66,6 +68,69 @@
 </template>
 
 <script>
+
+const onMRIData = {"gender": "male", "mriSpotted": ["CV12", "CV16", "CV22", "CV23", "CV3", "CV4", "CV6", "CV8", "HT2", "HT3", "HT5", "HT7", "HT8", "KI10", "KI11", "KI2", "KI21", "KI22", "KI27", "KI3", "KI4", "KI5", "KI6", "KI7", "KI9", "LR11", "LR12", "LR13", "LR14", "LR3", "LR4", "LR5", "LR8", "LR9", "LU10", "LU11", "LU4", "LU5", "LU7", "LU8", "LU9", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "SI19", "SI8", "SP10", "SP12", "SP14", "SP3", "SP4", "SP5", "SP6", "SP9", "ST10", "ST11", "ST12", "ST19", "ST2", "ST25", "ST29", "ST30", "ST31", "ST34", "ST35", "ST36", "ST37", "ST38", "ST39", "ST4", "ST40", "ST41", "ST42", "ST7", "ST8", "ST9", "TE20", "TE21", "TE4", "TE5"]}
+
+const parseAcupointsData = (data, genderIn) => {
+  const list = data['results']['bindings'];
+  const parsed = {};
+  const keyMap = {
+    Acupoint: "Acupoint",
+    "Acupuncture Method": "Acupuncture_Method",
+    Synonym: "Synonym",
+    Meridian: "Meridian",
+    "Chinese Name": "Chinese_Name",
+    Location: "Location",
+    "Locational Anatomy": "Locational_Anatomy",
+    Reference: "Reference",
+    Innervation: "Innervation",
+    Vasculature: "Vasculature",
+    "Special Point Role": "Special_Point_Role",
+  };
+
+  list.forEach(item => {
+    const name = item['Acupoint']['value'];
+    let onMRI = false;
+    const nameToMatch = name.split('(')[0].replaceAll(" ", "");
+    let gender = "";
+    if (name.toLowerCase().includes("female")) {
+      gender = "female";
+    } else if (name.toLowerCase().includes("male")) {
+      gender = "male";
+    }
+    if (onMRIData['mriSpotted'].includes(nameToMatch)) {
+      if (!gender || (gender === genderIn)) {
+        onMRI = true;
+      }
+    }
+    const obj = {};
+    for (const [key, value] of Object.entries(keyMap)) {
+      if (item[value]) {
+        obj[key] = item[value]['value'];
+      }
+    }
+    if (item['Acupoint_Category']['value'] === "Meridian Acupoint") {
+      obj["Meridian Point"] = true;
+    } else {
+      obj["Meridian Point"] = false;
+    }
+    if (item['Acupoint_Curie']['value'].includes('TARA:')) {
+      let curie = item['Acupoint_Curie']['value'];
+      curie = curie.replace(":", "_");
+      obj['Link'] = "https://tara-repository.mgb.org/term_resolution/tara.html#" + curie;
+    }
+    obj['onMRI'] = onMRI;
+    parsed[name] = obj;
+  });
+
+  //console.log("total matched", match)
+  //console.log("list total:", list.length)
+
+  return parsed;
+}
+
+
+
 /* eslint-disable no-alert, no-console */
 import { provide, markRaw } from 'vue'
 import Tagging from '../services/tagging.js';
@@ -156,6 +221,7 @@ export default {
   },
   data: function () {
     return {
+      acupoints: {},
       availableFacets: undefined,
       availableNameCurieMapping: undefined,
       sideBarVisibility: true,
@@ -181,6 +247,12 @@ export default {
       filterVisibility: true,
       filterOptions: [],
       annotationHighlight: [],
+      tabArray: [
+        { title: 'Dataset Explorer', id: 1, type: 'datasetExplorer', closable: false },
+        { title: 'Connectivity Explorer', id: 2, type: 'connectivityExplorer', closable: false },
+        { title: 'Annotation', id: 3, type: 'annotation', closable: true },
+        {title: 'Acupoints', id: 4, type: 'acupoints' },
+      ],
     }
   },
   watch: {
@@ -298,7 +370,44 @@ export default {
           this.availableNameCurieMapping = markRaw(availableData);
         }
 
-        if (action.type == "Search") {
+
+        if (action.type == "Acupoints") {
+          const filter = [
+            {
+                "facetPropPath": "flatmap.connectivity.source.all",
+                "facet": "Show all",
+                "term": "All"
+            },
+            {
+                "facetPropPath": "flatmap.connectivity.source.destination",
+                "facet": "Show all",
+                "term": "Destination"
+            },
+            {
+                "facetPropPath": "flatmap.connectivity.source.origin",
+                "facet": "Show all",
+                "term": "Origin"
+            },
+            {
+                "facetPropPath": "flatmap.connectivity.source.via",
+                "facet": "Show all",
+                "term": "Via"
+            },
+            {
+                "facetPropPath": "scaffold.connectivity.nerve",
+                "facet": "Left lesser splanchnic nerve",
+                "term": "Nerves",
+                "tagLabel": "Left lesser splanchnic nerve"
+            }
+          ];
+        if (action.acupointID === "KI 22") {
+          this.$refs.sideBar.openConnectivitySearch(filter, "");
+        }
+        this.$refs.sideBar.openAcupointsSearch([], action.acupointID);
+
+
+
+        } else if (action.type == "Search") {
           if (action.nervePath) {
             this.openSearch([action.filter], action.label);
           } else {
@@ -641,6 +750,7 @@ export default {
       EventBus.emit("hoverUpdate", { connectivityProcessed: this.connectivityProcessed });
     },
     searchChanged: function (data) {
+      console.log("searchChanged", data)
       if (data.tabType === 'dataset') {
         if (data && data.type == "reset-update") {
           this.settingsStore.updateAppliedFacets([]);
@@ -962,12 +1072,39 @@ export default {
         splitdialog.updateFlatmapMinimap();
       }
     },
+    populateAcupoints: function(rawData) {
+      const parsedData = parseAcupointsData(rawData, "male");
+      //Dont filtered
+      this.acupoints = parsedData;
+    },
+    readAcupoints: function() {
+      if (this.acupointsAPI) {
+        fetch(this.acupointsAPI)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Cannot download acupoints from server: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            this.populateAcupoints(data);
+          })
+          .catch((error) => {
+            console.log(error)
+            if (acupointEntries) {
+              this.populateAcupoints(acupointEntries);
+            }
+          });
+        }
+    },
+
   },
   created: function () {
     this._facets = [];
     this._externalStateSet = false;
   },
   mounted: function () {
+    this.readAcupoints();
     EventBus.on("CreateNewEntry", newView => {
       this.createNewEntry(newView);
     });
@@ -1073,6 +1210,9 @@ export default {
   },
   computed: {
     ...mapStores(useEntriesStore, useSettingsStore, useSplitFlowStore, useConnectivitiesStore),
+    acupointsAPI: function() {
+      return this.settingsStore.acupointsApi
+    },
     envVars: function () {
       return {
         API_LOCATION: this.settingsStore.sparcApi,

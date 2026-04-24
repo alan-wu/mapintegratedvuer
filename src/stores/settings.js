@@ -5,6 +5,7 @@ import { defineStore } from 'pinia';
 export const useSettingsStore = defineStore('settings', {
   state: () => {
     return {
+      acupointsApi: undefined,
       shareLink: undefined,
       sparcApi: undefined,
       algoliaIndex: "k-core_dev_published_time_desc",
@@ -89,6 +90,9 @@ export const useSettingsStore = defineStore('settings', {
     }
   },
   actions: {
+    updateAcupointsAPI(api) {
+      this.acupointsApi = api;
+    },
     updateShareLink(newLink) {
       this.shareLink = newLink;
     },

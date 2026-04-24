@@ -169,7 +169,6 @@ export default {
       }
 
       let returnedAction = undefined;
-      let action = "none";
       let fireResourceSelected = false;
       const result = {
         paneIndex: this.entry.id,
@@ -244,21 +243,30 @@ export default {
         }
       } else if (type == "Scaffold") {
         if (resource) {
-          if (resource.data?.id === undefined || resource.data?.id === "") {
-            resource.data.id = resource.data?.group;
-          }
-          result.internalName = resource.data.id;
-          // Facet search if marker is clicked
-          if (resource.data.lastActionOnMarker === true) {
+          if (resource.data?.region === "acupoints")  {
+            console.log(resource)
+            result.internalName = resource.data.id;
             returnedAction = {
-              type: "Facet",
-              facets: [capitalise(resource.data.id)],
+              type: "Acupoints",
+              acupointID: resource.data.id,
             };
+          }
+          else {
+            if (resource.data?.id === undefined || resource.data?.id === "") {
+              resource.data.id = resource.data?.group;
+            }
+            result.internalName = resource.data.id;
+            // Facet search if marker is clicked
+            if (resource.data.lastActionOnMarker === true) {
+              returnedAction = {
+                type: "Facet",
+                facets: [capitalise(resource.data.id)],
+              };
+            }
           }
         }
         result.eventType = "selected";
         fireResourceSelected = true;
-        action = "search";
       }
       if (returnedAction) EventBus.emit("PopoverActionClick", returnedAction);
       if (fireResourceSelected) this.$emit("resource-selected", result);

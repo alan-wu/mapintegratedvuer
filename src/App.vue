@@ -171,6 +171,7 @@ export default {
     },
     options: function() {
       return {
+        acupointsApi: import.meta.env.VITE_ACUPOINTS_LOCATION,
         sparcApi: import.meta.env.VITE_API_LOCATION,
         algoliaIndex: import.meta.env.VITE_ALGOLIA_INDEX,
         algoliaKey: import.meta.env.VITE_ALGOLIA_KEY,
