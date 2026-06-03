@@ -283,9 +283,26 @@ export default {
         this.$refs.scaffold.viewRegion(names);
       }
     },
+    readNifti: async function () {
+      const urls = [
+        "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/downsample_phase_1.nii.gz",
+        "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/downsample_phase_3.nii.gz",
+        "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/downsample_phase_5.nii.gz"
+      ]
+      const newTexture = await this.$refs.scaffold.readNIFTIFromSource(urls, true, this.maskUrl);
+      newTexture.timeEnabled = true;
+      newTexture.setIsPickable(false);
+      const scene = this.$refs.scaffold.$module.scene;
+      newTexture.setBrightness(0.38);
+      newTexture.setContrast(3.5);
+      scene.addZincObject(newTexture);
+      console.log(newTexture)
+    },
     scaffoldIsReady: function () {
       this.scaffoldLoaded = true;
       this.$refs.scaffold.$module.graphicsHighlight.highlightColour = [1, 0, 1];
+      this.readNifti();
+      /*
       if (!this.scaffoldRef) {
         this.scaffoldRef = markRaw(this.$refs.scaffold);
         if (this.scaffoldRef) {
@@ -300,6 +317,7 @@ export default {
       setTimeout(() => {
         this.setNerveGreyScale();
       }, 500);
+      */
     },
     /**
      * Callback when the vuers emit a selected event.
