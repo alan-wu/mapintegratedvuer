@@ -5,7 +5,7 @@ const initialDefaultState = () => {
     entries: [
       {
         label: "Lungs",
-        resource: "https://mapcore-bucket1.s3-us-west-2.amazonaws.com/Generic Scaffold/Lungs/21-May-2021/human/humanLungs_metadata.json",
+        resource: "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/scaffold-1/_metadata.json",
         type: "Scaffold",
         id: 1,
       }

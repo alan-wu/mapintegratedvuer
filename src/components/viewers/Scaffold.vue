@@ -40,6 +40,7 @@
         showTubeLinesControls: false,
         tubeLines: (entry.discoverId === '307' || entry.discoverId === 307)
       }"
+      @zinc-object-added="zincObjectAdded"
     />
 
     <HelpModeDialog
@@ -139,10 +140,20 @@ export default {
       }
     },
     scaffoldResourceSelected: async function (type, resource) {
+
       this.resourceSelected(type, resource, true)
+
+
+
+
+
+
+
       // When we directly click on a nerve, there will only be only one resource selected.
       // Both EventBus.emit and getKnowledgeTooltip will trigger sidebar content update
       // Then setVisibilityFilter will be called to zoom to the clicked nerve.
+
+      /*
       if (resource.length === 1) {
         this.clickedObject = resource[0].data;
         if (this.clickedObject.isNerves || this.clickedObject.anatomicalId) {
@@ -224,6 +235,7 @@ export default {
         this.clickedObject = undefined;
         EventBus.emit("connectivity-info-close");
       }
+      */
     },
     onResize: function () {
       if (!this.scaffoldCamera) {
@@ -295,15 +307,22 @@ export default {
       const scene = this.$refs.scaffold.$module.scene;
       newTexture.setBrightness(0.38);
       newTexture.setContrast(3.5);
+      newTexture.setPosition(-158.73, -150.51, -198.50);
       scene.addZincObject(newTexture);
       console.log(newTexture)
+    },
+    zincObjectAdded: function(zincObject) {
+      const regionName = zincObject.region?.getName()
+      if (!(regionName && regionName === "airways")) {
+        zincObject.setIsPickable(false);
+      }
+
     },
     scaffoldIsReady: function () {
       this.scaffoldLoaded = true;
       this.$refs.scaffold.$module.graphicsHighlight.highlightColour = [1, 0, 1];
       this.readNIFTI();
       this.settingsStore.userData.scaffoldRef = this.$refs.scaffold;
-      console.log(this.settingsStore.userData.scaffoldRef)
       /*
       if (!this.scaffoldRef) {
         this.scaffoldRef = markRaw(this.$refs.scaffold);

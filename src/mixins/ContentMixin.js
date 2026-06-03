@@ -10,7 +10,7 @@ import { useSettingsStore } from '../stores/settings';
 import { useSplitFlowStore } from '../stores/splitFlow';
 import { useConnectivitiesStore } from '../stores/connectivities';
 import Tagging from '../services/tagging.js';
-
+import { getFlowAndVolume } from '../components/scripts/simulation_data';
 import {
   getFlatmapFilterOptions,
 } from '@abi-software/map-utilities'
@@ -156,6 +156,10 @@ export default {
     searchSuggestions: function () {
       return;
     },
+    getSimulationAction: function(group) {
+      const time = this.$refs.scaffold.currentTime
+      console.log(group, time, getFlowAndVolume(group, time));
+    },
     /**
      * Callback when the vuers emit a selected event.
      */
@@ -256,6 +260,8 @@ export default {
             };
           }
           */
+          this.getSimulationAction(result.internalName);
+          /*
           returnedAction = {
             "requesterEntryId": this.entry.id,
             "label": "pressure-15Hz-stimulus-with-noise.csv",
@@ -282,6 +288,7 @@ export default {
             "discoverId": 1024,
             "version": 1
           }
+          */
         }
         result.eventType = "selected";
         //fireResourceSelected = true;
