@@ -58,13 +58,14 @@
 /* eslint-disable no-alert, no-console */
 import { markRaw } from "vue";
 import EventBus from "../EventBus";
+import { ElMessage } from 'element-plus';
 import ContentMixin from "../../mixins/ContentMixin";
-
 import { ScaffoldVuer } from "@abi-software/scaffoldvuer";
 import "@abi-software/scaffoldvuer/dist/style.css";
 import { HelpModeDialog } from '@abi-software/map-utilities'
 import '@abi-software/map-utilities/dist/style.css'
 import { getReferenceConnectivitiesFromStorage, getReferenceConnectivitiesByAPI } from "@abi-software/flatmapvuer/src/services/flatmapKnowledge.js";
+import 'element-plus/es/components/message/style/css';
 
 export default {
   name: "Scaffold",
@@ -296,19 +297,41 @@ export default {
       }
     },
     readNIFTI: async function () {
+      const ele = this.$refs.scaffoldContainer;
+      const original = ElMessage({
+        message: 'Downloading texture',
+        showClose: true,
+        duration: 0,
+      });
       const urls = [
         "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/downsample_phase_1.nii.gz",
         "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/downsample_phase_3.nii.gz",
         "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/downsample_phase_5.nii.gz"
       ]
       const newTexture = await this.$refs.scaffold.readNIFTIFromSource(urls, true, this.maskUrl);
-      newTexture.timeEnabled = true;
-      newTexture.setIsPickable(false);
-      const scene = this.$refs.scaffold.$module.scene;
-      newTexture.setBrightness(0.38);
-      newTexture.setContrast(3.5);
-      newTexture.setPosition(-158.73, -150.51, -198.50);
-      scene.addZincObject(newTexture);
+      if (newTexture) {
+        ElMessage({
+          message: 'Texture loaded Successfully',
+          showClose: true,
+          duration: 6000,
+          type: "success",
+
+        });
+        newTexture.timeEnabled = true;
+        newTexture.setIsPickable(false);
+        const scene = this.$refs.scaffold.$module.scene;
+        newTexture.setBrightness(0.38);
+        newTexture.setContrast(3.5);
+        newTexture.setPosition(-158.73, -150.51, -198.50);
+        scene.addZincObject(newTexture);
+      } else {
+        ElMessage({
+          message: 'Texture loaded Successfully',
+          showClose: true,
+          duration: 6000,
+          type: "success",
+        });
+      }
       console.log(newTexture)
     },
     zincObjectAdded: function(zincObject) {
