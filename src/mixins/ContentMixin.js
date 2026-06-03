@@ -248,16 +248,43 @@ export default {
           }
           result.internalName = resource.data.id;
           // Facet search if marker is clicked
+          /*
           if (resource.data.lastActionOnMarker === true) {
             returnedAction = {
               type: "Facet",
               facets: [capitalise(resource.data.id)],
             };
           }
+          */
+          returnedAction = {
+            "requesterEntryId": this.entry.id,
+            "label": "pressure-15Hz-stimulus-with-noise.csv",
+            "csv_file": "https://mapcore-demo.org/proxy-2026-APS-branch/experimental-data-test/experimental-data/vagal-stimulation/pressure-15Hz-stimulus-with-noise.csv",
+            "columns": [
+                {
+                    "name": "t",
+                    "cellml_variable": "main/t"
+                },
+                {
+                    "name": "left_ventricle_pressure",
+                    "cellml_variable": "main/u_lv",
+                    "anatomic_location": "UBERON:0002084"
+                },
+                {
+                    "name": "ascending_aorta_pressure",
+                    "cellml_variable": "main/u_AA",
+                    "anatomic_location": "UBERON:0001496"
+                }
+            ],
+            "resource": "https://mapcore-demo.org/proxy-2026-APS-branch/experimental-data-test/reveal/vagal-stimulation-simulation.omex",
+            "title": "View protocol",
+            "type": "Protocol",
+            "discoverId": 1024,
+            "version": 1
+          }
         }
         result.eventType = "selected";
-        fireResourceSelected = true;
-        action = "search";
+        //fireResourceSelected = true;
       }
       if (returnedAction) EventBus.emit("PopoverActionClick", returnedAction);
       if (fireResourceSelected) this.$emit("resource-selected", result);
@@ -804,8 +831,6 @@ export default {
     this.apiLocation = undefined;
     if (this.settingsStore.flatmapAPI)
       this.flatmapAPI = this.settingsStore.flatmapAPI;
-    if (this.settingsStore.sparcApi)
-      this.apiLocation = this.settingsStore.sparcApi;
     if (this.settingsStore.mapManager) {
       this.mapManager = this.settingsStore.mapManager;
     }

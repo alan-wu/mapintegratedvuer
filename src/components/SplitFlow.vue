@@ -91,6 +91,7 @@ import { mapStores } from 'pinia';
 import { useEntriesStore } from '../stores/entries';
 import { useMainStore } from '../stores/index'
 import { useSettingsStore } from '../stores/settings';
+import { useSimulationPlotStore } from '../stores/simulationPlotStore';
 import { useSplitFlowStore } from '../stores/splitFlow';
 import { useConnectivitiesStore } from '../stores/connectivities';
 import {
@@ -399,35 +400,58 @@ export default {
               this.splitFlowStore.setIdToPane(action.requesterEntryId)
             }
             const newView = {
-                  view: '2vertpanel',
-                  'pane-1': { id: action.requesterEntryId },
-                  'pane-2': { id: entryId },
-                  entries: this.entries,
-                }
+              view: '2vertpanel',
+              'pane-1': { id: action.requesterEntryId },
+              'pane-2': { id: entryId },
+              entries: this.entries,
+            }
             this.splitFlowStore.updateActiveView(newView)
             this.splitFlowStore.setIdToPane(entryId, 'pane-2')
-            // nextTick(() => {
-            //   const newView = {
-            //     view: '2vertpanel',
-            //     'pane-1': { id: action.requesterEntryId },
-            //     'pane-2': { id: newEntry },
-            //   }
-            //   this.splitFlowStore.updateActiveView(newView)
-            // })
+
           } else if (splitFlowState.activeView === '2vertpanel') {
             if (entryId) {
               this.splitFlowStore.setIdToPane(entryId, 'pane-2')
             } else {
               this.createNewEntry(action, 'pane-2')
             }
-            // const newView = {
-            //   view: splitFlowState.activeView,
-            //   'pane-1': { id: action.requesterEntryId },
-            //   'pane-2': { id: newEntryId },
-            // }
-            // this.splitFlowStore.updateActiveView(newView, false)
-            // splitFlowState.customLayout
-            // this.splitFlowStore.updateActiveView(newView)
+          }
+        } else if (action.type == 'Protocol') {
+          const splitFlowState = this.splitFlowStore.getState();
+          let entryId = this.simulationPlotStore.getEntryIdWithResource(action);
+          if (entryId) {
+            this.simulationPlotStore.runExperimentalData(action);
+          }
+          if (splitFlowState.activeView === 'singlepanel') {
+            if (!entryId) {
+              entryId = this.createNewEntry(action);
+              this.$nextTick(() =>
+                EventBus.emit('simulation-experimental-data', {
+                  targetEntryId: entryId,
+                  action: action,
+                })
+              );
+              this.splitFlowStore.setIdToPane(action.requesterEntryId);
+            }
+            const newView = {
+              view: '2vertpanel',
+              'pane-1': { id: action.requesterEntryId },
+              'pane-2': { id: entryId },
+              entries: this.entries,
+            };
+            this.splitFlowStore.updateActiveView(newView);
+            this.splitFlowStore.setIdToPane(entryId, 'pane-2');
+          } else if (splitFlowState.activeView === '2vertpanel') {
+            if (entryId) {
+              this.splitFlowStore.setIdToPane(entryId, 'pane-2');
+            } else {
+              this.createNewEntry(action, 'pane-2');
+              this.$nextTick(() =>
+                EventBus.emit('simulation-experimental-data', {
+                  targetEntryId: entryId,
+                  action: action
+                })
+              );
+            }
           }
         } else {
           this.trackGalleryClick(action);
@@ -803,6 +827,9 @@ export default {
       newEntry.viewUrl = undefined;
       newEntry.state = undefined;
       Object.assign(newEntry, data);
+      if (newEntry.type === "Protocol") {
+        newEntry.type = "Simulation"
+      }
       newEntry.mode = "normal";
       newEntry.id = this.getNewEntryId();
       newEntry.discoverId = data.discoverId;
@@ -1133,7 +1160,8 @@ export default {
     });
   },
   computed: {
-    ...mapStores(useEntriesStore, useSettingsStore, useSplitFlowStore, useConnectivitiesStore),
+    ...mapStores(useEntriesStore, useSettingsStore, useSimulationPlotStore,
+      useSplitFlowStore, useConnectivitiesStore),
     envVars: function () {
       return {
         ROOT_URL: this.settingsStore.rootUrl,

@@ -138,7 +138,7 @@ export default {
       this.$refs.viewer?.updateViewerSettings();
     },
     onHoverUpdate: function(payload) {
-      this.$refs.viewer?.sidebarHoverHighlight(payload);
+    //  this.$refs.viewer?.sidebarHoverHighlight(payload);
     },
     onShowConnectivity: function(payload) {
       this.$refs.viewer?.showConnectivity(payload);
