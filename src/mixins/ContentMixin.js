@@ -261,7 +261,7 @@ export default {
           }
           */
           this.getSimulationAction(result.internalName);
-          /*
+
           returnedAction = {
             "requesterEntryId": this.entry.id,
             "label": "pressure-15Hz-stimulus-with-noise.csv",
@@ -288,7 +288,7 @@ export default {
             "discoverId": 1024,
             "version": 1
           }
-          */
+
         }
         result.eventType = "selected";
         //fireResourceSelected = true;
