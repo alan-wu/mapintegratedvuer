@@ -257,11 +257,13 @@ export const useSplitFlowStore = defineStore('splitFlow', {
           });
       }
     },
-    updateActiveView(payload, emitSpeciesChanged = true) {
+    updateActiveView(payload,  autoAssign = true, emitSpeciesChanged = true) {
       this.activeView = payload.view;
       const customLayout = newLayoutWithOrigInfo(
         this.customLayout, this.activeView);
-      autoAssignEntryIdsToPane(payload.entries, customLayout);
+      if (autoAssign) {
+        autoAssignEntryIdsToPane(payload.entries, customLayout);
+      }
       for (const [key, value] of Object.entries(customLayout)) {
         this.customLayout[key] = value;
       }
@@ -329,6 +331,14 @@ export const useSplitFlowStore = defineStore('splitFlow', {
       this.customLayout["pane-1"].id = id;
       if (currentKey) {
         this.customLayout[currentKey].id = firstPaneId;
+      }
+    },
+    setIdToPane(id, pane = 'pane-1') {
+      const currentKey = findKeyWithId(this.customLayout, id)
+      const firstPaneId = this.customLayout[pane].id
+      this.customLayout[pane].id = id
+      if (currentKey) {
+        this.customLayout[currentKey].id = firstPaneId
       }
     },
     reset() {
