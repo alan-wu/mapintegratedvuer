@@ -158,7 +158,24 @@ export default {
     },
     getSimulationAction: function(group) {
       const time = this.$refs.scaffold.currentTime
-      console.log(group, time, getFlowAndVolume(group, time));
+      const { flow, volume } = getFlowAndVolume(group, time);
+
+      if (flow && volume) {
+        return {
+          "requesterEntryId": this.entry.id,
+          "label": "pressure-15Hz-stimulus-with-noise.csv",
+          "params": {
+            flow: flow,
+            volume: volume,
+          },
+          "resource": "https://mapcore-demo.org/proxy-2026-APS-branch/experimental-data-test/reveal/vagal-stimulation-simulation.omex",
+          "title": "Run parameter",
+          "type": "SimParameters",
+          "discoverId": 1024,
+          "version": 1
+        }
+      }
+      return;
     },
     /**
      * Callback when the vuers emit a selected event.
@@ -260,34 +277,7 @@ export default {
             };
           }
           */
-          this.getSimulationAction(result.internalName);
-
-          returnedAction = {
-            "requesterEntryId": this.entry.id,
-            "label": "pressure-15Hz-stimulus-with-noise.csv",
-            "csv_file": "https://mapcore-demo.org/proxy-2026-APS-branch/experimental-data-test/experimental-data/vagal-stimulation/pressure-15Hz-stimulus-with-noise.csv",
-            "columns": [
-                {
-                    "name": "t",
-                    "cellml_variable": "main/t"
-                },
-                {
-                    "name": "left_ventricle_pressure",
-                    "cellml_variable": "main/u_lv",
-                    "anatomic_location": "UBERON:0002084"
-                },
-                {
-                    "name": "ascending_aorta_pressure",
-                    "cellml_variable": "main/u_AA",
-                    "anatomic_location": "UBERON:0001496"
-                }
-            ],
-            "resource": "https://mapcore-demo.org/proxy-2026-APS-branch/experimental-data-test/reveal/vagal-stimulation-simulation.omex",
-            "title": "View protocol",
-            "type": "Protocol",
-            "discoverId": 1024,
-            "version": 1
-          }
+          returnedAction = this.getSimulationAction(result.internalName);
 
         }
         result.eventType = "selected";

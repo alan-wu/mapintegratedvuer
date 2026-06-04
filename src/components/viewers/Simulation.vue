@@ -1,11 +1,10 @@
 <template>
   <SimulationVuer
-    :apiLocation="apiLocation"
+    apiLocation="temp"
     :id="id" ref="simulation"
     @data-notification="handleDataNotification"
     @externalData="handleExternalEvent"
     @file="handleFileEvent"
-
   />
 </template>
 
@@ -33,6 +32,7 @@ export default {
     return {
       columns: undefined,
       csv: undefined,
+      params: undefined,
       fileOpened: false,
     }
   },
@@ -52,6 +52,13 @@ export default {
           this.fileOpened = true
           if (this.entry.csv_file || this.csv_file) {
             this.addExternalData(
+              {
+                targetEntryId: this.entry.id,
+                action: this.entry
+              }
+            )
+          } else if (this.params || this.entry.params) {
+            this.hackParamsRequest(
               {
                 targetEntryId: this.entry.id,
                 action: this.entry
@@ -90,6 +97,37 @@ export default {
         },
       })
     },
+    updatePrimeInput: function(parent, labelText, newValue) {
+      const labels = Array.from(parent.querySelectorAll('label'));
+      const targetLabel = labels.find(el => el.textContent.includes(labelText));
+      if (!targetLabel) {
+        console.error(`Label "${labelText}" not found`);
+        return;
+      }
+      const container = targetLabel.closest('.p-floatlabel');
+      const input = container.querySelector('input');
+
+      if (input) {
+        input.value = ++input.value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        input.dispatchEvent(new Event('blur', { bubbles: true }));
+      }
+    },
+    hackParamsRequest: function(payload) {
+      if (this.entry.id === payload.targetEntryId) {
+        const data = payload.action;
+        if (data.params) {
+          this.params = {...data.params};
+        }
+        if (this.params && this.fileOpened) {
+          const inputs = this.$refs.simulation.$el.querySelector('.p-fieldset.p-component .p-fieldset-content');
+          this.updatePrimeInput(inputs, 'Stimulus Frequency (Hz)', 11);
+          this.updatePrimeInput(inputs, 'Stimulus start time (s)', 11);
+
+        }
+      }
+    },
     addExternalData: function(payload) {
       if (this.entry.id === payload.targetEntryId) {
         const data = payload.action
@@ -109,11 +147,13 @@ export default {
           this.$refs.simulation.addExternalData(this.csv_file, undefined, parameters)
         }
       }
-    }
+    },
+
   },
   mounted: function () {
     EventBus.on('simulation-external-data', this.addExternalData)
     EventBus.on('simulation-data-request', this.handleDataRequest)
+    EventBus.on('simulation-params-hack', this.hackParamsRequest)
     EventBus.on('plot-window-closed', this.handleWindowClosed)
 
     EventBus.emit('simulation-ready', {
@@ -121,7 +161,6 @@ export default {
       entryId: this.entry.id,
       ready: true,
     })
-    console.log(this.entry)
   },
   beforeUnmount: function () {
     EventBus.emit('simulation-ready', {

@@ -391,7 +391,7 @@ const getFlowAndVolume = (compartment, time) => {
   if (compartment) {
     const entry = fvData.compartments.find(
       element => element.name === compartment);
-    if (!entry) return;
+    if (!entry) return { };
 
     const min = 1.0, max = 5.0;
     const range = max - min;

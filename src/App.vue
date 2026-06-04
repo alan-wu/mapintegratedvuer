@@ -2,7 +2,7 @@
   <div id="app">
     <link rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Asap:400,400i,500,600,700&display=swap">
-      <div class="button-container">
+      <div class="button-container" v-if="false">
         <el-popover
           placement="bottom"
           trigger="click"
@@ -508,8 +508,8 @@ body {
 
 .map-app {
   margin: 0 auto;
-  width: calc(100% - #{$gap * 2});
-  height: calc(100% - #{$button-container-size + $gap});
+  width: 100%;
+  height: 100%;
   border: solid 1px #dcdfe6;
   box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.06);
   box-sizing: border-box;

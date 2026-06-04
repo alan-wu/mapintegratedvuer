@@ -7,6 +7,7 @@
       class="default-theme"
       :horizontal="isHorizontal"
       :dbl-click-splitter="false"
+      @resized="resized"
     >
       <template v-for="(child) in children" :key="child">
         <pane :ref="child" @vue:beforeUnmount="childUnmounted(child)">
@@ -14,7 +15,7 @@
             v-if="customLayout[child].content"
             @resize="calculateStyles(child)">
           </resize-sensor>
-          <custom-splitter 
+          <custom-splitter
             v-else
             :key="child"
             :index="child"
@@ -53,7 +54,7 @@ export default {
   methods: {
     requestStylesUpdate: function(refName) {
       if (this.$refs) {
-        if (refName in this.$refs && this.$refs[refName] && 
+        if (refName in this.$refs && this.$refs[refName] &&
         this.$refs[refName][0] && this.$refs[refName][0].$el) {
           const el = this.$refs[refName][0].$el;
           const rect = el.getBoundingClientRect();
@@ -80,6 +81,9 @@ export default {
     },
     childUnmounted: function(refName) {
       EventBus.emit("PaneUnmounted", {refName});
+    },
+    resized: function() {
+      console.log("resized")
     }
   },
   computed: {

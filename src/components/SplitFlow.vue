@@ -415,11 +415,11 @@ export default {
               this.createNewEntry(action, 'pane-2')
             }
           }
-        } else if (action.type == 'Protocol') {
+        } else if (action.type == 'SimParameters') {
           const splitFlowState = this.splitFlowStore.getState();
           let entryId = this.simulationPlotStore.getEntryIdWithResource(action);
           if (entryId) {
-            this.simulationPlotStore.runExperimentalData(action);
+            this.simulationPlotStore.runParameters(action);
           }
           if (splitFlowState.activeView === 'singlepanel') {
             if (!entryId) {
@@ -827,7 +827,7 @@ export default {
       newEntry.viewUrl = undefined;
       newEntry.state = undefined;
       Object.assign(newEntry, data);
-      if (newEntry.type === "Protocol") {
+      if (newEntry.type === "SimParameters") {
         newEntry.type = "Simulation"
       }
       newEntry.mode = "normal";

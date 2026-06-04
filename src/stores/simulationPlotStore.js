@@ -71,6 +71,18 @@ export const useSimulationPlotStore = defineStore('simulationPlot', () => {
     return entryId
   }
 
+  function runParameters(data) {
+    const entryId = getEntryIdWithResource(data)
+    if (entryId) {
+      console.log("runParameters", simulationEntries.value[data.resource].entryId, data)
+      EventBus.emit('simulation-params-hack', {
+        targetEntryId: simulationEntries.value[data.resource].entryId,
+        action: data,
+      })
+    }
+    return entryId
+  }
+
   function requestSimulation(data) {
     if (data.protocol === null || !simulationEntries.value[data.protocol?.resource]?.ready) return
 
@@ -118,6 +130,7 @@ export const useSimulationPlotStore = defineStore('simulationPlot', () => {
     handleSimulationResponse,
     requestSimulation,
     runExperimentalData,
+    runParameters,
     initListeners,
     removeWindow,
   }

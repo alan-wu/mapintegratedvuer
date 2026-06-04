@@ -309,6 +309,7 @@ export default {
         "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/downsample_phase_5.nii.gz"
       ]
       const newTexture = await this.$refs.scaffold.readNIFTIFromSource(urls, true, this.maskUrl);
+      original.close();
       if (newTexture) {
         ElMessage({
           message: 'Texture loaded Successfully',
@@ -332,7 +333,6 @@ export default {
           type: "success",
         });
       }
-      console.log(newTexture)
     },
     zincObjectAdded: function(zincObject) {
       const regionName = zincObject.region?.getName()
