@@ -108,7 +108,7 @@ export default {
       const input = container.querySelector('input');
 
       if (input) {
-        input.value = newValue;
+        input.value = newValue.toFixed(3);
         input.dispatchEvent(new Event('input', { bubbles: true }));
         input.dispatchEvent(new Event('change', { bubbles: true }));
         input.dispatchEvent(new Event('blur', { bubbles: true }));
