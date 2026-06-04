@@ -7,7 +7,6 @@
       class="default-theme"
       :horizontal="isHorizontal"
       :dbl-click-splitter="false"
-      @resized="resized"
     >
       <template v-for="(child) in children" :key="child">
         <pane :ref="child" @vue:beforeUnmount="childUnmounted(child)">
@@ -82,9 +81,6 @@ export default {
     childUnmounted: function(refName) {
       EventBus.emit("PaneUnmounted", {refName});
     },
-    resized: function() {
-      console.log("resized")
-    }
   },
   computed: {
     ...mapStores(useSplitFlowStore),

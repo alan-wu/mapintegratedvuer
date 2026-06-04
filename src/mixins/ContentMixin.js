@@ -10,7 +10,7 @@ import { useSettingsStore } from '../stores/settings';
 import { useSplitFlowStore } from '../stores/splitFlow';
 import { useConnectivitiesStore } from '../stores/connectivities';
 import Tagging from '../services/tagging.js';
-import { getFlowAndVolume } from '../components/scripts/simulation_data';
+import { getMockData } from '../components/scripts/simulation_data';
 import {
   getFlatmapFilterOptions,
 } from '@abi-software/map-utilities'
@@ -158,17 +158,17 @@ export default {
     },
     getSimulationAction: function(group) {
       const time = this.$refs.scaffold.currentTime
-      const { flow, volume } = getFlowAndVolume(group, time);
-
-      if (flow && volume) {
+      const mockData = getMockData(group);
+      console.log(mockData)
+      if (mockData) {
         return {
           "requesterEntryId": this.entry.id,
           "label": "pressure-15Hz-stimulus-with-noise.csv",
           "params": {
-            flow: flow,
-            volume: volume,
+            "Inspiration time": mockData["Inspiration time"],
+            "Expiration time": mockData["Expiration time"],
           },
-          "resource": "https://mapcore-demo.org/proxy-2026-APS-branch/experimental-data-test/reveal/vagal-stimulation-simulation.omex",
+          "resource": "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/Oxygen+transport+v9.omex",
           "title": "Run parameter",
           "type": "SimParameters",
           "discoverId": 1024,

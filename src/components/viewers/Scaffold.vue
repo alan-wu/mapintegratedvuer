@@ -344,7 +344,9 @@ export default {
     scaffoldIsReady: function () {
       this.scaffoldLoaded = true;
       this.$refs.scaffold.$module.graphicsHighlight.highlightColour = [1, 0, 1];
-      this.readNIFTI();
+      if (this.entry.resource === "https://mapcore-bucket1.s3.us-west-2.amazonaws.com/digital_twins/080626-demo/scaffold-1/_metadata.json") {
+        this.readNIFTI();
+      }
       this.settingsStore.userData.scaffoldRef = this.$refs.scaffold;
       /*
       if (!this.scaffoldRef) {

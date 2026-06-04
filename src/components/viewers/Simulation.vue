@@ -108,7 +108,7 @@ export default {
       const input = container.querySelector('input');
 
       if (input) {
-        input.value = ++input.value;
+        input.value = newValue;
         input.dispatchEvent(new Event('input', { bubbles: true }));
         input.dispatchEvent(new Event('change', { bubbles: true }));
         input.dispatchEvent(new Event('blur', { bubbles: true }));
@@ -122,8 +122,7 @@ export default {
         }
         if (this.params && this.fileOpened) {
           const inputs = this.$refs.simulation.$el.querySelector('.p-fieldset.p-component .p-fieldset-content');
-          this.updatePrimeInput(inputs, 'Stimulus Frequency (Hz)', 11);
-          this.updatePrimeInput(inputs, 'Stimulus start time (s)', 11);
+          Object.keys(this.params).forEach((key) => this.updatePrimeInput(inputs, key, this.params[key]));
 
         }
       }
