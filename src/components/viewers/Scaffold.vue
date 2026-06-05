@@ -1,5 +1,21 @@
 <template>
   <div class="viewer-container">
+    <el-menu
+      v-if="true"
+      :ellipsis="false"
+      class="el-menu-popper-demo"
+      mode="horizontal"
+      :popper-offset="8"
+      :teleported="false"
+      style="max-width:350px"
+    >
+      <el-menu-item index="reset" @click="resetView()">
+        <template #title>
+          <el-icon><ElIconRefresh /></el-icon>
+          <span>Reset View</span>
+        </template>
+      </el-menu-item>
+    </el-menu>
     <ScaffoldVuer
       v-if="activated"
       :state="entry.state"
@@ -58,7 +74,11 @@
 /* eslint-disable no-alert, no-console */
 import { markRaw } from "vue";
 import EventBus from "../EventBus";
-import { ElMessage } from 'element-plus';
+import {
+  ElMessage,
+  ElMenu as Menu,
+  ElMenuItem as MenuItem,
+} from 'element-plus';
 import ContentMixin from "../../mixins/ContentMixin";
 import { ScaffoldVuer } from "@abi-software/scaffoldvuer";
 import "@abi-software/scaffoldvuer/dist/style.css";
@@ -71,6 +91,8 @@ export default {
   name: "Scaffold",
   mixins: [ ContentMixin ],
   components: {
+    Menu,
+    MenuItem,
     ScaffoldVuer,
     HelpModeDialog,
   },
@@ -139,6 +161,9 @@ export default {
       if (this.$refs.scaffold?.viewingMode === "Neuron Connection") {
         this.filter = data.filter(f => f.facet?.toLowerCase() !== 'show all');
       }
+    },
+    resetView: function() {
+      this.$refs.scaffold.$module.scene.resetView();
     },
     scaffoldResourceSelected: async function (type, resource) {
 
@@ -553,5 +578,40 @@ export default {
 :deep(.message-popper) {
   white-space: unset;
   max-width: 200px;
+}
+
+:deep(.el-menu-popper-demo) {
+  position:absolute;
+  z-index:2;
+  left:0px;
+  position:absolute;
+  background-color: rgba(255, 255, 255, 0.8);
+  height:30px;
+
+}
+
+
+:deep(.el-menu), .el-sub-menu, .el-menu-item{
+  color: #8300BF;
+  --el-menu-active-color:#8300BF;
+  --el-menu-hover-text-color:#8300BF;
+  --el-menu-hover-bg-color:#F3E6F9;
+  --el-menu-base-level-padding:10px;
+  --el-menu-level-padding:10px;
+  --el-font-family: "Asap", sans-serif;
+  font-family: "Asap", sans-serif;
+
+  .el-tooltip__trigger.el-tooltip__trigger {
+    color: #8300BF;
+    &:hover {
+      background-color: #F3E6F9;
+    }
+  }
+
+  .el-sub-menu.is-active {
+    .el-sub-menu__title {
+      border-bottom: none;
+    }
+  }
 }
 </style>
