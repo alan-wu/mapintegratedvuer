@@ -230,6 +230,9 @@ export default {
     setState: function(state){
       return this.$refs.flow.setState(state);
     },
+    sendEventBus: function(name, payload) {
+      EventBus.emit(name, payload);
+    },
     /**
      * @public
      * Get the current state of the map viewer, these states can be used to

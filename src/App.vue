@@ -25,6 +25,7 @@
                 <el-button @click="setFlatmap()" size="small">Set Flatmap</el-button>
                 <el-button @click="setSearch()" size="small">Set Search</el-button>
                 <el-button @click="toggleLongLabel()" size="small">Toggle Long Label</el-button>
+                <el-button @click="sendEvent()" size="small">Send event</el-button>
               </div>
             </div>
             <template #reference>
@@ -478,6 +479,15 @@ export default {
           }
         }
       })
+    },
+    sendEvent: function() {
+      this.$refs.map.sendEventBus("opencor-set-axis",
+        {
+          label: "Y Axis",
+          value: "main/v_i_j",
+        }
+      );
+
     },
   },
   mounted: function() {

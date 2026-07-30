@@ -60,7 +60,9 @@
     "@abi-software/simulationvuer": "3.2.6",
     "@abi-software/sparc-annotation": "0.3.2",
     "@abi-software/svg-sprite": "1.0.4",
+    "@celldl/viewer": "^0.20260730.0",
     "@element-plus/icons-vue": "^2.3.1",
+    "@opencor/opencor": "0.20260616.0",
     "@vitejs/plugin-vue": "^4.6.2",
     "css-element-queries": "^1.2.3",
     "element-plus": "2.8.4",
@@ -70,6 +72,7 @@
     "splitpanes": "^3.1.5",
     "unplugin-vue-components": "^0.26.0",
     "vue": "^3.4.21",
+    "vue-svg-pan-zoom": "^2.1.0",
     "xss": "^1.0.14"
   },
   "devDependencies": {
@@ -100,6 +103,7 @@
     "mochawesome-report-generator": "^6.2.0",
     "sass": "^1.69.5",
     "vite": "^5.0.10",
+    "vite-svg-loader": "^5.1.1",
     "vitepress": "^1.0.0-rc.45",
     "vitest": "^1.2.2",
     "vue-docgen-api": "^4.79.2",

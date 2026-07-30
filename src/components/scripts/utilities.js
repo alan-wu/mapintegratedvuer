@@ -4,11 +4,27 @@ const initialDefaultState = () => {
   return {
     entries: [
       {
-        label: "Lungs",
-        resource: "https://mapcore-bucket1.s3-us-west-2.amazonaws.com/Generic Scaffold/Lungs/21-May-2021/human/humanLungs_metadata.json",
-        type: "Scaffold",
+        label: "Test",
+        //resource: "https://mapcore-bucket1.s3-us-west-2.amazonaws.com/Generic Scaffold/Lungs/21-May-2021/human/humanLungs_metadata.json",
+        type: "SVGViewer",
         id: 1,
-      }
+      },
+
+      /*
+      {
+        label: "Test",
+        //resource: "https://mapcore-bucket1.s3-us-west-2.amazonaws.com/Generic Scaffold/Lungs/21-May-2021/human/humanLungs_metadata.json",
+        type: "OpenCORView",
+        id: 2,
+      },
+
+      {
+        label: "Test",
+        //resource: "https://mapcore-bucket1.s3-us-west-2.amazonaws.com/Generic Scaffold/Lungs/21-May-2021/human/humanLungs_metadata.json",
+        type: "CellDLView",
+        id: 2
+      },
+      */
     ],
   };
 }
