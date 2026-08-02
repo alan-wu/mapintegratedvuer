@@ -77,9 +77,9 @@ export default {
         const targetOption = options.find(opt => opt.textContent.trim() === value);
         if (targetOption) {
           targetOption.click();
-          console.log(`Selected "${optionText}" for Y Axis`);
+          console.log(`Selected "${label}" for Axis`);
         } else {
-          console.error(`Option "${optionText}" not found in dropdown list`);
+          console.error(`Option "${label}" not found in dropdown list`);
         }
       });
 

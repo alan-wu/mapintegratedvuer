@@ -50,7 +50,7 @@ const Flatmap = defineAsyncComponent(() => import("./viewers/Flatmap.vue"));
 const Iframe = defineAsyncComponent(() => import("./viewers/Iframe.vue"));
 const MultiFlatmap = defineAsyncComponent(() => import("./viewers/MultiFlatmap.vue"));
 const ConnectivityGraph = defineAsyncComponent(() => import("./viewers/ConnectivityGraph.vue"));
-const CellDLView = defineAsyncComponent(() => import("./viewers/CellDLViewer.vue"));
+//const CellDLView = defineAsyncComponent(() => import("./viewers/CellDLViewer.vue"));
 const OpenCORView = defineAsyncComponent(() => import("./viewers/OpenCOR.vue"));
 const Plot = defineAsyncComponent(() => import("./viewers/Plot.vue"));
 const Scaffold = defineAsyncComponent(() => import("./viewers/Scaffold.vue"));
@@ -73,7 +73,7 @@ export default {
   components: {
     //DatasetHeader,
     Button,
-    CellDLView,
+   // CellDLView,
     ContentBar,
     ConnectivityGraph,
     Flatmap,
