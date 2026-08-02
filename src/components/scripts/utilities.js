@@ -5,12 +5,14 @@ const initialDefaultState = () => {
     entries: [
       {
         label: "Test",
+        mode: "main",
         //resource: "https://mapcore-bucket1.s3-us-west-2.amazonaws.com/Generic Scaffold/Lungs/21-May-2021/human/humanLungs_metadata.json",
         type: "SVGViewer",
         id: 1,
       },
       {
         label: "Test",
+        mode: "main",
         //resource: "https://mapcore-bucket1.s3-us-west-2.amazonaws.com/Generic Scaffold/Lungs/21-May-2021/human/humanLungs_metadata.json",
         type: "OpenCORView",
         id: 2,

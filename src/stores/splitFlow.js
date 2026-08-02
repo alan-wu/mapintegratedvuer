@@ -135,7 +135,7 @@ const findKeyWithId = (layout, id) => {
 
 const getOriginalState = () => {
   return {
-    activeView: "singlepanel",
+    activeView: "2vertpanel",
     idNamePair: {},
     viewIcons: [
       { icon: "singlepanel", name: "Single view", min: 1 },

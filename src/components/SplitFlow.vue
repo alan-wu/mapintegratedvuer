@@ -985,6 +985,7 @@ export default {
     this._externalStateSet = false;
   },
   mounted: function () {
+
     EventBus.on("CreateNewEntry", newView => {
       this.createNewEntry(newView);
     });
@@ -1079,6 +1080,10 @@ export default {
     })
     this.$nextTick(() => {
       if (this.search === "" && this._facets.length === 0) {
+        this.splitFlowStore.updateActiveView({
+          view: this.splitFlowStore.activeView,
+          entries: this.entries,
+        });
         if (this.$refs.sideBar) {
           this.$refs.sideBar.close();
         }
