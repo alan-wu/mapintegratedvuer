@@ -1,5 +1,39 @@
 <template>
   <div style="width: 100%; height: 100%;">
+    <!-- URL Modal Dialog -->
+    <el-dialog
+      v-model="dialogVisible"
+      title="Specify URL"
+      :before-close="dialogCancel"
+      destroy-on-close
+      :appendElement="appendElement"
+    >
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-position="top"
+        @submit.prevent="handleSubmit"
+      >
+        <el-form-item label="Target URL" prop="url">
+          <el-input
+            v-model="form.url"
+            placeholder="https://example.com"
+            clearable
+            @keyup.enter="handleSubmit"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogCancel">
+            Cancel
+          </el-button>
+          <el-button type="primary" :loading="submitting" @click="handleSubmit"> Save URL </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
     <el-menu
       class="el-menu-popper-demo"
       mode="horizontal"
@@ -26,6 +60,12 @@
           />
         </el-menu-item>
         <el-menu-item
+          index="default"
+          @click="loadSVGRemote()"
+        >
+          Load SVG (Remote)
+        </el-menu-item>
+        <el-menu-item
           @click="loadKnowledgeTrigger()"
           index="loadKnowdledge"
         >
@@ -35,8 +75,14 @@
             id="load-knowledge"
             type="file"
             accept="application/json"
-            @change="loadKnowledge()"
+            @change="loadKnowledgeURL()"
             />
+        </el-menu-item>
+        <el-menu-item
+          @click="loadKnowledgeRemote()"
+          index="loadKnowdledge"
+        >
+          Load Knowledge (Remote)
         </el-menu-item>
       </el-sub-menu>
     </el-menu>
@@ -69,6 +115,7 @@ import ContentMixin from "../../mixins/ContentMixin";
 //import { getVariableName } from "../../services/knowledgeMapping";
 import EventBus from "../EventBus";
 import {
+  ElDialog as Dialog,
   ElMenu as Menu,
   ElSubMenu as SubMenu,
 } from "element-plus";
@@ -83,18 +130,37 @@ const getVariableName = (knowledgeMap, name) => {
   }
 };
 
+const isURLValid = (string) => {
+  try {
+    const url = new URL(string);
+    console.log(url)
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export default {
   name: "SVGViewer",
   mixins: [ ContentMixin ],
   components: {
+    Dialog,
     Menu,
     SubMenu,
   },
   data: function() {
     return {
+      appendElement: undefined,
+      dialogVisible: false,
       knowledge: markRaw({}),
       svgContent: '',
       panZoomInstance: markRaw(null),
+      form: {
+        url: '',
+        type: 'svg'
+      },
+      knowledgeURL: '',
+      svgURL: '',
     }
   },
 
@@ -126,6 +192,10 @@ export default {
       }
       reader.readAsText(file);
     },
+    loadKnowledgeRemote: function () {
+      this.form.type = "knowledge";
+      this.dialogVisible = true;
+    },
     loadSVGTrigger: function() {
       const selectedFile = this.$refs['svgInput']?.click();
     },
@@ -154,6 +224,25 @@ export default {
       }
       reader.readAsText(file);
     },
+    handleSubmit: function() {
+      if (this.form.url) {
+        if (isURLValid(this.form.url)) {
+          if (this.form.type === "svg") {
+            this.svgURL = this.form.url;
+          } else {
+            this.knowledgeURL = this.form.url;
+          }
+        }
+      }
+    },
+    dialogCancel: function () {
+      this.form.url = '';
+      this.dialogVisible = false;
+    },
+    loadSVGRemote: function () {
+      this.form.type = "svg";
+      this.dialogVisible = true;
+    },
     triggerSimulation: function(elementId) {
       if (elementId) {
         const mapping = getVariableName(this.knowledge, elementId);
@@ -170,6 +259,9 @@ export default {
         }
       }
     },
+  },
+  mounted: function() {
+    this.appendElement = document.querySelector(".mapcontent");
   }
 };
 </script>
