@@ -2,11 +2,12 @@
   <div style="width: 100%; height: 100%;">
     <!-- URL Modal Dialog -->
     <el-dialog
+      v-if="appendElement"
       v-model="dialogVisible"
-      title="Specify URL"
+      :title="dialogTitle"
       :before-close="dialogCancel"
       destroy-on-close
-      :appendElement="appendElement"
+      :append-to="appendElement"
     >
       <el-form
         ref="formRef"
@@ -29,7 +30,7 @@
           <el-button @click="dialogCancel">
             Cancel
           </el-button>
-          <el-button type="primary" :loading="submitting" @click="handleSubmit"> Save URL </el-button>
+          <el-button type="primary" :loading="submitting" @click="handleSubmit"> Load URL </el-button>
         </span>
       </template>
     </el-dialog>
@@ -48,7 +49,7 @@
         </template>
         <el-menu-item
           index="default"
-          @click="loadSVGTrigger()"
+          @click="triggerSVGLocal()"
         >
           Load SVG
           <input
@@ -56,17 +57,17 @@
             id="load-svg"
             type="file"
             accept="image/svg+xml"
-            @change="loadSVG()"
+            @change="loadSVGLocal()"
           />
         </el-menu-item>
         <el-menu-item
           index="default"
-          @click="loadSVGRemote()"
+          @click="triggerSVGRemote()"
         >
           Load SVG (Remote)
         </el-menu-item>
         <el-menu-item
-          @click="loadKnowledgeTrigger()"
+          @click="triggerKnowledgeLocal()"
           index="loadKnowdledge"
         >
           Load Knowledge
@@ -75,11 +76,11 @@
             id="load-knowledge"
             type="file"
             accept="application/json"
-            @change="loadKnowledgeURL()"
+            @change="loadKnowledgeLocal()"
             />
         </el-menu-item>
         <el-menu-item
-          @click="loadKnowledgeRemote()"
+          @click="triggerKnowledgeRemote()"
           index="loadKnowdledge"
         >
           Load Knowledge (Remote)
@@ -114,15 +115,17 @@ import svgPanZoom from "svg-pan-zoom";
 import ContentMixin from "../../mixins/ContentMixin";
 //import { getVariableName } from "../../services/knowledgeMapping";
 import EventBus from "../EventBus";
+import { ElMessage } from 'element-plus';
 import {
   ElDialog as Dialog,
   ElMenu as Menu,
   ElSubMenu as SubMenu,
 } from "element-plus";
-
+import 'element-plus/es/components/message/style/css';
 import { markRaw } from 'vue';
 
 const getVariableName = (knowledgeMap, name) => {
+  console.log("getVariableName", knowledgeMap, name)
   if (Object.hasOwn(knowledgeMap.features, name)) {
     console.log("pass")
     const data = knowledgeMap.features[name];
@@ -152,18 +155,23 @@ export default {
     return {
       appendElement: undefined,
       dialogVisible: false,
-      knowledge: markRaw({}),
+      knowledge: markRaw(undefined),
+      submitting: false,
       svgContent: '',
       panZoomInstance: markRaw(null),
       form: {
         url: '',
-        type: 'svg'
+        type: 'SVG'
       },
       knowledgeURL: '',
       svgURL: '',
     }
   },
-
+  computed: {
+    dialogTitle: function () {
+      return `Specify ${this.form.type} URL`;
+    }
+  },
   methods: {
     handleClick: function(event) {
       const group = event.target.closest('g');
@@ -179,58 +187,109 @@ export default {
         }
       }
     },
-    loadKnowledgeTrigger: function() {
-      const selectedFile = this.$refs["knowledgeInput"]?.click();
+    setKnowledgeContent: function(content) {
+      this.knowledge = markRaw(content);
+      ElMessage({
+        message: 'Knowledge data loaded successfully',
+        showClose: true,
+        duration: 6000,
+        type: "success",
+        appendTo: this.appendElement,
+      });
+      this.dialogVisible = false;
     },
-    loadKnowledge: function() {
+    loadKnowledgeLocal: function() {
       const file = this.$refs['knowledgeInput'].files[0];
       if (!file || file.type !== 'application/json') return;
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.knowledge = markRaw(JSON.parse(e.target.result));
+        this.setKnowledgeContent(JSON.parse(e.target.result));
         console.log(this.knowledge)
       }
       reader.readAsText(file);
     },
-    loadKnowledgeRemote: function () {
-      this.form.type = "knowledge";
+    loadKnowledgeRemote: async function(url) {
+      this.knowledgeURL = url;
+      const response = await fetch(url);
+      const knowledge = await response.json();
+      this.setKnowledgeContent(knowledge);
+    },
+    triggerKnowledgeLocal: function() {
+      this.$refs["knowledgeInput"]?.click();
+    },
+    triggerKnowledgeRemote: function () {
+      this.form.type = "Knowledge";
+      this.form.url = this.knowledgeURL;
       this.dialogVisible = true;
     },
-    loadSVGTrigger: function() {
-      const selectedFile = this.$refs['svgInput']?.click();
+    setSVGContent: function (content) {
+      if (this.panZoomInstance) {
+        this.panZoomInstance.destroy();
+        this.panZoomInstance = markRaw(null);
+      }
+      this.svgContent = content;
+      this.$nextTick(() => {
+        const svgEl = this.$refs['svgContainer'].querySelector('svg');
+        if (svgEl) {
+          // Initialize pan & zoom directly on the loaded SVG element
+          this.panZoomInstance = markRaw(svgPanZoom(svgEl, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+          }));
+          ElMessage({
+            message: 'SVG data loaded successfully',
+            showClose: true,
+            duration: 6000,
+            type: "success",
+            appendTo: this.appendElement,
+          });
+          this.dialogVisible = false;
+        }
+      });
     },
-    loadSVG: function() {
+    loadSVGLocal: function() {
       const file = this.$refs['svgInput'].files[0];
       if (!file || file.type !== 'image/svg+xml') return;
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (this.panZoomInstance) {
-          this.panZoomInstance.destroy();
-          this.panZoomInstance = markRaw(null);
-        }
-        this.svgContent = e.target.result;
-        this.$nextTick(() => {
-          const svgEl = this.$refs['svgContainer'].querySelector('svg');
-          if (svgEl) {
-            // Initialize pan & zoom directly on the loaded SVG element
-            this.panZoomInstance = markRaw(svgPanZoom(svgEl, {
-              zoomEnabled: true,
-              controlIconsEnabled: true,
-              fit: true,
-              center: true,
-            }));
-          }
-        });
+        this.setSVGContent(e.target.result);
       }
       reader.readAsText(file);
+
+    },
+    loadSVGRemote: async function(url) {
+      this.svgURL = url;
+      const response = await fetch(url);
+      if (!response.ok) {
+        ElMessage({
+          message: 'There is an issue while loading the SVG data.',
+          showClose: true,
+          duration: 6000,
+          type: "error",
+          appendTo: this.appendElement,
+        });
+        return;
+      }
+      const svgText = await response.text();
+      this.setSVGContent(svgText);
+    },
+    triggerSVGLocal: function() {
+      this.$refs['svgInput']?.click();
+    },
+    triggerSVGRemote: function () {
+      this.form.type = "SVG";
+      this.form.url = this.svgURL;
+      this.dialogVisible = true;
     },
     handleSubmit: function() {
       if (this.form.url) {
         if (isURLValid(this.form.url)) {
-          if (this.form.type === "svg") {
-            this.svgURL = this.form.url;
+          if (this.form.type === "SVG") {
+            this.loadSVGRemote(this.form.url);
           } else {
-            this.knowledgeURL = this.form.url;
+            this.loadKnowledgeRemote(this.form.url);
           }
         }
       }
@@ -239,14 +298,13 @@ export default {
       this.form.url = '';
       this.dialogVisible = false;
     },
-    loadSVGRemote: function () {
-      this.form.type = "svg";
-      this.dialogVisible = true;
-    },
     triggerSimulation: function(elementId) {
       if (elementId) {
-        const mapping = getVariableName(this.knowledge, elementId);
-        const variable = mapping?.variable;
+        let variable = elementId;
+        if (this.knowledge) {
+          const mapping = getVariableName(this.knowledge, elementId);
+          variable = mapping?.variable;
+        }
         console.log(variable)
         if (variable) {
           EventBus.emit(
